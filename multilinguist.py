@@ -1,5 +1,6 @@
 import requests
 import json
+import random
 
 class Multilinguist:
   """This class represents a world traveller who knows 
@@ -40,7 +41,10 @@ class Multilinguist:
     params = {'fullText': 'true'}
     response = requests.get(f"{self.countries_base_url}/{country_name}", params=params)
     json_response = json.loads(response.text)
-    return json_response[0]['languages'][0]['iso639_1']
+    try:
+      return json_response[0]['languages'][0]['iso639_1']
+    except KeyError:
+      return "Not Great"
 
   def travel_to(self, country_name):
     """Sets current_lang to one of the languages spoken
@@ -76,5 +80,49 @@ class Multilinguist:
     params = {'text': msg, 'to': self.current_lang, 'from': 'en'}
     response = requests.get(self.translatr_base_url, params=params)
     json_response = json.loads(response.text)
-    return json_response['translationText']
+    try:
+      return json_response['translationText']
+    except KeyError:
+      return "Also not great"
 
+class MathGenuis(Multilinguist):
+
+  def report_total(self, num_list):
+    for number in num_list:
+      summ = number =+ number
+    return self.say_in_local_language(f'The total is {summ}')
+
+
+class QuoteCollector(Multilinguist):
+
+  def __init__(self):
+
+    super().__init__()
+    self.quotes = [] 
+  
+
+  def collecting_quotes(self, quote):
+    self.quotes.append(quote)
+
+  def selecting_random_quote(self):
+    quote = self.say_in_local_language(random.choice(self.quotes))
+    return quote
+  
+new_collector = QuoteCollector()
+new_collector.travel_to("Japan")
+new_collector.collecting_quotes("and then we had the bisque, yada yada yada")
+new_collector.collecting_quotes("do or do not, there is no try")
+new_collector.collecting_quotes("failing is not trying, all other outcomes are degrees of success")
+print(new_collector.selecting_random_quote())
+
+
+
+me = MathGenuis()
+print(me.report_total([23,45,676,34,5778,4,23,5465]))
+me.travel_to("India")
+print(me.report_total([6,3,6,68,455,4,467,57,4,534]))
+    
+new_traveler = Multilinguist()
+print(new_traveler.language_in('france'))
+print(new_traveler.travel_to('england'))
+print(new_traveler.say_in_local_language("what's going on here?"))
